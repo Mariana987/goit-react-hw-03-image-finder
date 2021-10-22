@@ -1,74 +1,138 @@
 import { Component } from 'react';
+import PropTypes from "prop-types";
 import ImageGalleryItem from '../ImageGalleryItem';
-import fetchImages from '../../services/imageApi'
+import fetchImages from '../../services/imageApi';
+import Spinner from '../Loader/Loader'
+import LoadMoreBtn from '../Button'
+import Modal from '../Modal'
 
 
 export default class ImageGallery extends Component {
-
-
     state = {
-        picture: null,
+        pictureName: null,
         error: null,
         status: 'idle',
-        pictures: []
-
+        pictures: [],
+        baseApi: "https://pixabay.com/api/",
+        myKey: '23171615-fcdc729843fe7af43a640cf8d',
+        page: 1,
+        largeUrl: " ",
+        showModal: false,
     }
 
-
-
     componentDidUpdate(prevProps, prevState) {
-        const myKey = '23171615-fcdc729843fe7af43a640cf8d'
-        const { pictureName } = this.props
+        const { baseApi, myKey, page } = this.state;
+        const { pictureName } = this.props;
 
         if (prevProps.pictureName !== this.props.pictureName) {
 
-            this.setState({ status: 'pending' })
-            // fetch(`https://pixabay.com/api/?q=${this.props.pictureName}&page=1&key=${myKey}&image_type=photo&orientation=horizontal&per_page=12`)
-            //     .then(response => {
-            //         if (response.ok) {
-            //             return response.json()
-            //         }
-            //         return Promise.reject(
-            //             new Error(`nothing found &{this.props.pictireName}`),
-            //         );
-            //     })
-            fetchImages(pictureName)
-                // return Promise.reject(
-                //     new Error(`nothing found &{this.props.pictureName}`),
-                // );
-                .then(picture => this.setState({ picture, status: 'resolved' }))
-                .catch(error => this.setState({ error, status: 'rejected' }))
-            console.log(this.state.picture)
+            this.setState({ status: 'pending' });
+            this.setState({ pictures: [] });
 
+
+            fetchImages(pictureName, baseApi, myKey, page)
+                .then((pictures) => {
+                    if (pictures.length === 0) {
+                        return this.setState({ status: 'rejected' });
+
+                    }
+                    this.setState({ page: 1 })
+                    this.getPictures(pictures);
+                })
+
+                .then(this.setState({ status: 'resolved' }))
+                .catch((error) => this.setState({ error, status: 'rejected' }));
+
+
+        }
+        else if (prevState.page !== this.state.page) {
+            this.setState({ status: 'pending' });
+
+            fetchImages(pictureName, baseApi, myKey, page)
+                .then((pictures) => this.getPictures(pictures))
+                .then(this.setState({ status: 'resolved' }))
+                .then(() => window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'smooth',
+                })
+                )
+                .catch((error) => this.setState({ error, status: 'rejected' }))
         }
     }
 
+
+    getPictures = (arr) => {
+        const newArr = arr.map((picture) => {
+            return {
+                id: picture.id,
+                webformatURL: picture.webformatURL,
+                largeImageURL: picture.largeImageURL
+            };
+        });
+
+        this.setState({
+            pictures: [...this.state.pictures, ...newArr],
+        });
+    };
+    onLoadMoreBtn = () => {
+        this.setState({
+            page: this.state.page + 1,
+        })
+    }
+    toggleModal = () => {
+        this.setState(({ showModal }) => ({
+            showModal: !showModal,
+        }))
+    };
+    takeModalPicture = (url) => {
+        this.setState({ largeUrl: url, showModal: true })
+    };
+
     render() {
 
-        const { picture, error, status } = this.state
+        const { pictures, status, largeUrl, showModal } = this.state
+
         if (status === 'idle') {
-            return <div> Enter something</div>
+            return <h1 className="title"> Enter what are you looking for.</h1>
         }
         if (status === 'pending') {
-            return <div>LOADING...</div>
+            return <Spinner />
+
         }
         if (status === 'rejected') {
-            return <h1>{error.message}</h1>
+            return <h1 className="title">
+                By searching "{this.props.pictureName}" nothing found, sorry.<br />
+                Try enter something else
+            </h1>
         }
         if (status === 'resolved') {
-            return <ul className="ImageGallery">
-                {/* {picture.map((picture) => (
-                    <ImageGalleryItem
-                        largeImageURL={picture.largeImageURL}
-                    />
-
-                ))} */}
-
-                <ImageGalleryItem
-                // largeImageURL={picture.hits[0].webformatURL}
-                />
-            </ul>
+            return (
+                <div>
+                    <ul className="ImageGallery">
+                        {pictures.map((picture) => (
+                            <ImageGalleryItem
+                                key={picture.id}
+                                webformatURL={picture.webformatURL}
+                                largeImageURL={picture.largeImageURL}
+                                onOpen={this.takeModalPicture}
+                            />
+                        ))}
+                    </ul>
+                    {showModal && (
+                        <Modal onClose={this.toggleModal}>
+                            <img src={largeUrl} alt="modal-img" />
+                        </Modal>
+                    )
+                    }
+                    <LoadMoreBtn onLoadMoreBtn={this.onLoadMoreBtn} />
+                </div >
+            )
         }
     }
 
 }
+
+
+ImageGallery.propTypes = {
+    inputValue: PropTypes.string,
+};

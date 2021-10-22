@@ -146,6 +146,7 @@ img {
   list-style: none;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 30px;
 }
 
 /*
@@ -194,6 +195,16 @@ img {
 /*
 * Стили компонента Buton (Load more)
 */
+
+.load_more{
+     margin-left: auto;
+  margin-right: auto;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  text-align: center;
+  align-items: center;
+}
+
 .Button {
   padding: 8px 16px;
   border-radius: 2px;
@@ -218,4 +229,14 @@ img {
 .Button:hover,
 .Button:focus {
   background-color: #303f9f;
+}
+
+
+.spinner {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.title{
+  text-align: center;
 }

@@ -1,6 +1,9 @@
-export default function ImageGalleryItem({ picture: { webformatURL } }) {
+import PropTypes from "prop-types";
+
+export default function ImageGalleryItem({ webformatURL, onOpen, largeImageURL }) {
     return (
-        <li className="ImageGalleryItem">
+        <li className="ImageGalleryItem" onClick={() =>
+            onOpen(largeImageURL)}>
             <img src={webformatURL}
                 alt=""
                 className="ImageGalleryItem-image" />
@@ -8,7 +11,11 @@ export default function ImageGalleryItem({ picture: { webformatURL } }) {
     )
 }
 
-
+ImageGalleryItem.propTypes = {
+    webformatURL: PropTypes.string,
+    onOpen: PropTypes.func,
+    largeImageURL: PropTypes.string,
+};
 
 
 

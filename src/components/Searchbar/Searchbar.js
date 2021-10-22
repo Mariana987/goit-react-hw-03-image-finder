@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
+import PropTypes from "prop-types";
 
 export default class Searchbar extends Component {
     state = {
@@ -8,7 +9,6 @@ export default class Searchbar extends Component {
 
     handleNameChange = event => {
         this.setState({ pictureName: event.currentTarget.value.toLowerCase() });
-        console.log(event.currentTarget.value)
     };
 
     handleSubmit = event => {
@@ -34,7 +34,6 @@ export default class Searchbar extends Component {
                         className="SearchForm-input"
                         type="text"
                         autoComplete="off"
-                        autoFocus
                         placeholder="Search images and photos"
                         name="pictureName"
                         value={this.state.pictureName}
@@ -46,19 +45,6 @@ export default class Searchbar extends Component {
     }
 
 }
-
-{/* <header className="Searchbar">
-    <form className="SearchForm">
-        <button type="submit" className="SearchForm-button">
-            <span className="SearchForm-button-label">Search</span>
-        </button>
-
-        <input
-            className="SearchForm-input"
-            type="text"
-            autocomplete="off"
-            autofocus
-            placeholder="Search images and photos"
-        />
-    </form>
-</header> */}
+Searchbar.propTypes = {
+    onSubmit: PropTypes.func,
+};
