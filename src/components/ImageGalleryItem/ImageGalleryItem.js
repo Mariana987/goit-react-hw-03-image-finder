@@ -1,16 +1,35 @@
-import { Component } from 'react';
-
-export default class ImageGalleryItem extends Component {
-    render() {
-        return (
-
-            <li className="ImageGalleryItem">
-                <img src="" alt="" className="ImageGalleryItem-image" />
-            </li>
-
-        )
-    }
+export default function ImageGalleryItem({ picture: { webformatURL } }) {
+    return (
+        <li className="ImageGalleryItem">
+            <img src={webformatURL}
+                alt=""
+                className="ImageGalleryItem-image" />
+        </li>
+    )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // import PropTypes from "prop-types";
