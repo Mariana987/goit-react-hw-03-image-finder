@@ -28,7 +28,7 @@ export default class ImageGallery extends Component {
 
             this.setState({ status: 'pending' });
             this.setState({ pictures: [] });
-
+            this.setState({ page: 1 })
 
             fetchImages(pictureName, baseApi, myKey, page)
                 .then((pictures) => {
@@ -36,8 +36,8 @@ export default class ImageGallery extends Component {
                         return this.setState({ status: 'rejected' });
 
                     }
-                    this.setState({ page: 1 })
                     this.getPictures(pictures);
+
                 })
 
                 .then(this.setState({ status: 'resolved' }))
@@ -45,7 +45,7 @@ export default class ImageGallery extends Component {
 
 
         }
-        else if (prevState.page !== this.state.page) {
+        else if (prevState.page !== this.state.page && this.state.page !== 1) {
             this.setState({ status: 'pending' });
 
             fetchImages(pictureName, baseApi, myKey, page)
